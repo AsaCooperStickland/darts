@@ -19,6 +19,7 @@ class DARTSCell(nn.Module):
     self.dropouth = dropouth
     self.dropoutx = dropoutx
     self.genotype = genotype
+    self.entropy_loss = 0. # ASA
 
     # genotype is None when doing arch search
     steps = len(self.genotype.recurrent) if self.genotype is not None else STEPS
@@ -91,13 +92,13 @@ class DARTSCell(nn.Module):
 class RNNModel(nn.Module):
     """Container module with an encoder, a recurrent module, and a decoder."""
 
-    def __init__(self, ntoken, ninp, nhid, nhidlast, 
+    def __init__(self, ntoken, ninp, nhid, nhidlast,
                  dropout=0.5, dropouth=0.5, dropoutx=0.5, dropouti=0.5, dropoute=0.1,
                  cell_cls=DARTSCell, genotype=None):
         super(RNNModel, self).__init__()
         self.lockdrop = LockedDropout()
         self.encoder = nn.Embedding(ntoken, ninp)
-        
+
         assert ninp == nhid == nhidlast
         if cell_cls == DARTSCell:
             assert genotype is not None
@@ -157,4 +158,3 @@ class RNNModel(nn.Module):
     def init_hidden(self, bsz):
       weight = next(self.parameters()).data
       return [Variable(weight.new(1, bsz, self.nhid).zero_())]
-

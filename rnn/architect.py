@@ -56,6 +56,8 @@ class Architect(object):
 
   def _backward_step(self, hidden, input, target):
     loss, hidden_next = self.model._loss(hidden, input, target)
+    print(self.model.entropy_loss)
+    loss += self.model.entropy_loss
     for v in self.model.arch_parameters():
       if v.grad is not None:
         v.grad.data.zero_()
@@ -116,4 +118,3 @@ class Architect(object):
       p.data.add_(R, v)
 
     return [(x-y).div_(2*R + 1e-10) for x, y in zip(grads_p, grads_n)]
-

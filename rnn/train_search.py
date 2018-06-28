@@ -70,7 +70,7 @@ parser.add_argument('--small_batch_size', type=int, default=-1,
                      until batch_size is reached. An update step is then performed.')
 parser.add_argument('--max_seq_len_delta', type=int, default=20,
                     help='max sequence length')
-parser.add_argument('--single_gpu', default=True, action='store_false', 
+parser.add_argument('--single_gpu', default=True, action='store_false',
                     help='use single GPU')
 parser.add_argument('--gpu', type=int, default=0, help='GPU device to use')
 parser.add_argument('--unrolled', action='store_true', default=False, help='use one-step unrolled validation loss')
@@ -123,7 +123,7 @@ ntokens = len(corpus.dictionary)
 if args.continue_train:
     model = torch.load(os.path.join(args.save, 'model.pt'))
 else:
-    model = model.RNNModelSearch(ntokens, args.emsize, args.nhid, args.nhidlast, 
+    model = model.RNNModelSearch(ntokens, args.emsize, args.nhid, args.nhidlast,
                        args.dropout, args.dropouth, args.dropoutx, args.dropouti, args.dropoute)
 
 size = 0
@@ -173,9 +173,11 @@ def train():
     total_loss = 0
     start_time = time.time()
     ntokens = len(corpus.dictionary)
+    logging.info('Getting hiddens...')
     hidden = [model.init_hidden(args.small_batch_size) for _ in range(args.batch_size // args.small_batch_size)]
     hidden_valid = [model.init_hidden(args.small_batch_size) for _ in range(args.batch_size // args.small_batch_size)]
     batch, i = 0, 0
+    logging.info('Starting to train...')
     while i < train_data.size(0) - 1 - 1:
         bptt = args.bptt if np.random.random() < 0.95 else args.bptt / 2.
         # Prevent excessively small or negative sequence lengths

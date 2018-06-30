@@ -7,7 +7,10 @@ PRIMITIVES = [
     'tanh',
     'relu',
     'sigmoid',
-    'identity'
+    'identity',
+    'elu',
+    'selu',
+    'leaky_relu'
 ]
 STEPS = 8
 CONCAT = 8

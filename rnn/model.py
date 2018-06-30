@@ -63,6 +63,12 @@ class DARTSCell(nn.Module):
       f = F.relu
     elif name == 'sigmoid':
       f = F.sigmoid
+    elif name == 'elu':
+      f = F.elu
+    elif name == 'selu':
+      f = F.selu
+    elif name == 'leaky_relu':
+      f = F.leaky_relu
     elif name == 'identity':
       f = lambda x: x
     else:

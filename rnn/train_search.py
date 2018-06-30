@@ -185,7 +185,6 @@ def train():
         # # There's a very small chance that it could select a very long sequence length resulting in OOM
         # seq_len = min(seq_len, args.bptt + args.max_seq_len_delta)
         seq_len = int(bptt)
-        logging.info('Starting to train...')
         lr2 = optimizer.param_groups[0]['lr']
         optimizer.param_groups[0]['lr'] = lr2 * seq_len / args.bptt
         model.train()

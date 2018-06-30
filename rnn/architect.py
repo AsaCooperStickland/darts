@@ -68,11 +68,11 @@ class Architect(object):
           hidden_valid, input_valid, target_valid, eta):
     model_unrolled = self._compute_unrolled_model(hidden_train, input_train, target_train, eta)
     loss, hidden_next = model_unrolled._loss(hidden_valid, input_valid, target_valid)
-    dist = F.softmax(model_unrolled.weights, dim=-1).view(-1)
-    entropy_loss = torch.sum(dist * torch.log(dist), dim=0) # ASA
-    print(entropy_loss, 'ent')
-    print(loss)
-    loss += 0.005 * entropy_loss
+    #dist = F.softmax(model_unrolled.weights, dim=-1).view(-1)
+    #entropy_loss = torch.sum(dist * torch.log(dist), dim=0) # ASA
+    #print(entropy_loss, 'ent')
+    #print(loss)
+    #loss += 0.005 * entropy_loss
     grads = torch.autograd.grad(loss, model_unrolled.arch_parameters(), retain_graph=True)
 
     theta = model_unrolled.parameters()

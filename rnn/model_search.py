@@ -16,8 +16,13 @@ class DARTSCellSearch(DARTSCell):
   def cell(self, x, h_prev, x_mask, h_mask):
     s0 = self._compute_init_state(x, h_prev, x_mask, h_mask)
     s0 = self.bn(s0)
-    probs = F.softmax(self.weights, dim=-1)
-
+    #probs = F.softmax(self.weights, dim=-1)
+    sft = True
+    if sft:
+        probs = F.softmax(self.weights, dim=-1)
+    else:
+        rel = F.relu(self.weights)
+        probs = rel / (torch.sum(rel, dim=-1).unsqueeze_(-1) + 0.001)
     offset = 0
     states = s0.unsqueeze(0)
     for i in range(STEPS):
@@ -36,7 +41,7 @@ class DARTSCellSearch(DARTSCell):
         fn = self._get_activation(name)
         unweighted = states + c * (fn(h) - states)
         dist = probs[offset:offset+i+1, k].unsqueeze(-1).unsqueeze(-1)
-        self.entropy_loss += torch.sum(dist * torch.log(dist), dim=0) # ASA
+        #self.entropy_loss += torch.sum(dist * torch.log(dist), dim=0) # ASA
         s += torch.sum(dist * unweighted, dim=0)
 
       s = self.bn(s)
@@ -92,7 +97,12 @@ class RNNModelSearch(RNNModel):
           gene.append((PRIMITIVES[k_best], j))
           start = end
         return gene
-
-      gene = _parse(F.softmax(self.weights, dim=-1).data.cpu().numpy())
+      sft = True
+      if sft:
+          dist = F.softmax(self.weights, dim=-1)
+      else:
+          rel = F.relu(self.weights)
+          dist = rel / (torch.sum(rel, dim=-1).unsqueeze_(-1) + 0.001)    
+      gene = _parse(dist.data.cpu().numpy())
       genotype = Genotype(recurrent=gene, concat=range(STEPS+1)[-CONCAT:])
       return genotype
